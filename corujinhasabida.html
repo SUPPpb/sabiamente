@@ -5,6 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória - SabiaMente</title>
   <style>
+     #game-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    justify-content: center;
+    margin-top: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+      @media (max-width: 600px) {
+    #game-board {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 320px; /* 4x80px + gaps */
+    }
+  }
+    #result-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  #result-content {
+    background: #663399;
+    padding: 2rem;
+    border-radius: 12px;
+    color: #FFD700;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 0 15px #FFD700;
+  }
+
+  #result-content h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+  }
+
+  #result-content p {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+  }
+
+  #result-content .botao {
+    margin-top: 1rem;
+    background-color: #FFD700;
+    color: #663399;
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  #result-content .botao:hover {
+    background-color: #e6c200;
+  }
+     <div id="result-modal">
+    <div id="result-content">
+      <h2 id="result-score"></h2>
+      <p id="result-message"></p>
+      <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+      <br/>
+      <button id="close-modal" class="botao" style="margin-top:1rem;">Fechar</button>
+    </div>
+  </div>
+
     body {
       font-family: Arial, sans-serif;
       background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
