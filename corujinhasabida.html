@@ -33,23 +33,16 @@
       text-shadow: 2px 2px 4px #000;
     }
 
+    /* Forçar 4 colunas sempre */
     #game-board {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       justify-content: center;
       margin-top: 2rem;
-      max-width: 500px;
+      max-width: 360px; /* 4 x 80px + gaps */
       margin-left: auto;
       margin-right: auto;
-    }
-
-    /* Forçar 4 colunas no celular para grade 4x4 */
-    @media (max-width: 600px) {
-      #game-board {
-        grid-template-columns: repeat(4, 1fr);
-        max-width: 340px; /* 4 x 80px + gaps */
-      }
     }
 
     .card {
@@ -88,8 +81,6 @@
     #restart:hover {
       background-color: #552288;
     }
-
-    /* Removido o #score-message do layout principal pois usamos modal */
 
     /* Modal para resultado */
     #result-modal {
@@ -156,11 +147,6 @@
   <div id="game-board"></div>
 
   <button id="restart">Reiniciar Jogo</button>
-
-  <div class="contato" id="inscricao-box">
-    <h2>Vamos desenvolver mais sua mente?</h2>
-    <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
-  </div>
 
   <!-- Modal Resultado -->
   <div id="result-modal">
