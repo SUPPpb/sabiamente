@@ -97,6 +97,18 @@ h1 {
   </style>
 </head>
 <body>
+  <style>
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: url('CorujinhaSabidaExercicio.png') no-repeat center center;
+    background-size: contain;
+    opacity: 0.08;
+    z-index: -1;
+  }
+</style>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
