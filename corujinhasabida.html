@@ -5,40 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória - SabiaMente</title>
   <style>
-   body {
-  font-family: Arial, sans-serif;
-  background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
-  background-size: contain;
-  background-color: #663399; /* fundo roxo para preencher o restante */
-  background-blend-mode: multiply;
-  color: #ffffff;
-  text-align: center;
-  margin: 0;
-  padding: 2rem;
-}
-
-h1 {
-  color: #FFD700;
-  text-shadow: 2px 2px 4px #000;
-}
-
-#score-message {
-  margin-top: 2rem;
-  font-size: 1.2rem;
-  color: #FFD700;
-  font-weight: bold;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
+      background-size: contain;
+      background-color: #663399;
+      background-blend-mode: multiply;
+      color: #ffffff;
+      text-align: center;
+      margin: 0;
+      padding: 2rem;
     }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: url('CorujinhaSabidaExercicio.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.08;
+      z-index: -1;
+    }
+
+    h1 {
+      color: #FFD700;
+      text-shadow: 2px 2px 4px #000;
+    }
+
     #game-board {
       display: grid;
-      grid-template-columns: repeat(4, 100px);
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       gap: 10px;
       justify-content: center;
       margin-top: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
+
     .card {
-      width: 100px;
-      height: 100px;
+      aspect-ratio: 1 / 1;
       background-color: #A8E6CF;
       border-radius: 10px;
       font-size: 2rem;
@@ -50,13 +57,16 @@ h1 {
       transition: background-color 0.3s, transform 0.2s;
       box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     }
+
     .card.revealed {
       background-color: #eee6f7;
       cursor: default;
     }
+
     .card.matched {
       background-color: #d4f7d4;
     }
+
     #restart {
       margin-top: 2rem;
       background-color: #663399;
@@ -66,15 +76,18 @@ h1 {
       border-radius: 5px;
       cursor: pointer;
     }
+
     #restart:hover {
       background-color: #552288;
     }
+
     #score-message {
       margin-top: 2rem;
       font-size: 1.2rem;
-      color: #663399;
+      color: #FFD700;
       font-weight: bold;
     }
+
     .contato {
       background-color: rgba(255, 255, 255, 0.9);
       margin-top: 3rem;
@@ -82,6 +95,7 @@ h1 {
       border-radius: 10px;
       display: inline-block;
     }
+
     .botao {
       background-color: #663399;
       color: white;
@@ -91,24 +105,13 @@ h1 {
       display: inline-block;
       margin-top: 1rem;
     }
+
     .botao:hover {
       background-color: #552288;
     }
   </style>
 </head>
 <body>
-  <style>
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: url('CorujinhaSabidaExercicio.png') no-repeat center center;
-    background-size: contain;
-    opacity: 0.08;
-    z-index: -1;
-  }
-</style>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
@@ -214,8 +217,8 @@ h1 {
     }
 
     function showScore() {
-      let score = matches; // 8 pares = 8 pontos
-      if (attempts <= 12) score += 2; // bônus se for eficiente
+      let score = matches;
+      if (attempts <= 12) score += 2;
       if (score > 10) score = 10;
       messageBox.innerText = `Nota: ${score}/10 — ${messages[score]}`;
       inscricaoBox.style.display = "block";
@@ -226,3 +229,4 @@ h1 {
   </script>
 </body>
 </html>
+
