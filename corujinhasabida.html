@@ -7,7 +7,8 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #fdfdfd;
+      background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
+      background-size: cover;
       text-align: center;
       margin: 0;
       padding: 2rem;
@@ -15,6 +16,7 @@
     }
     h1 {
       color: #663399;
+      text-shadow: 1px 1px 2px white;
     }
     #game-board {
       display: grid;
@@ -35,6 +37,7 @@
       cursor: pointer;
       user-select: none;
       transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     }
     .card.revealed {
       background-color: #eee6f7;
@@ -55,13 +58,44 @@
     #restart:hover {
       background-color: #552288;
     }
+    #score-message {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #663399;
+      font-weight: bold;
+    }
+    .contato {
+      background-color: rgba(255, 255, 255, 0.9);
+      margin-top: 3rem;
+      padding: 2rem;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .botao {
+      background-color: #663399;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    .botao:hover {
+      background-color: #552288;
+    }
   </style>
 </head>
 <body>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
+  <div id="score-message"></div>
   <button id="restart">Reiniciar Jogo</button>
+
+  <div class="contato" id="inscricao-box" style="display: none;">
+    <h2>Vamos desenvolver mais sua mente?</h2>
+    <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+  </div>
 
   <script>
     const emojis = ['🐶', '🐱', '🐸', '🦉', '🧠', '🌻', '📚', '🎵'];
@@ -69,6 +103,25 @@
     let firstCard = null;
     let secondCard = null;
     let lockBoard = false;
+    let matches = 0;
+    let attempts = 0;
+
+    const messageBox = document.getElementById("score-message");
+    const inscricaoBox = document.getElementById("inscricao-box");
+
+    const messages = [
+      "Vamos tentar de novo? Sua mente pode muito mais!",
+      "Você está aquecendo. Inscreva-se e avance mais.",
+      "Ainda dá pra evoluir bastante! Vem com a gente.",
+      "Podemos melhorar, faça a inscrição abaixo.",
+      "Bom, mas você pode ir além. Vamos juntos?",
+      "Tá indo bem! Vamos treinar mais?",
+      "Ótimo! Que tal mais desafios mentais?",
+      "Excelente! Falta pouco pra atingir o máximo.",
+      "Impressionante! Continue nesse ritmo!",
+      "Quase lá! Inscreva-se para alcançar o 10!",
+      "Parabéns! Sua mente está afiada como nunca!"
+    ];
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -82,6 +135,7 @@
       const board = document.getElementById("game-board");
       board.innerHTML = '';
       const shuffled = shuffle([...emojis, ...emojis]);
+      cards = [];
       shuffled.forEach((emoji, index) => {
         const card = document.createElement("div");
         card.classList.add("card");
@@ -92,6 +146,10 @@
         board.appendChild(card);
         cards.push(card);
       });
+      matches = 0;
+      attempts = 0;
+      messageBox.innerText = '';
+      inscricaoBox.style.display = 'none';
     }
 
     function handleClick(e) {
@@ -108,11 +166,14 @@
 
       secondCard = card;
       lockBoard = true;
+      attempts++;
 
       if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
         firstCard.classList.add("matched");
         secondCard.classList.add("matched");
+        matches++;
         resetTurn();
+        if (matches === 8) showScore();
       } else {
         setTimeout(() => {
           firstCard.innerText = '';
@@ -129,14 +190,15 @@
       lockBoard = false;
     }
 
-    document.getElementById("restart").addEventListener("click", () => {
-      cards = [];
-      firstCard = null;
-      secondCard = null;
-      lockBoard = false;
-      createBoard();
-    });
+    function showScore() {
+      let score = matches; // 8 pares = 8 pontos
+      if (attempts <= 12) score += 2; // bônus se for eficiente
+      if (score > 10) score = 10;
+      messageBox.innerText = `Nota: ${score}/10 — ${messages[score]}`;
+      inscricaoBox.style.display = "block";
+    }
 
+    document.getElementById("restart").addEventListener("click", createBoard);
     createBoard();
   </script>
 </body>
