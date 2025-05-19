@@ -17,6 +17,17 @@
       padding: 2rem;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: url('CorujinhaSabidaExercicio.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.08;
+      z-index: -1;
+    }
+
     h1 {
       color: #FFD700;
       text-shadow: 2px 2px 4px #000;
@@ -24,11 +35,21 @@
 
     #game-board {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       gap: 10px;
       justify-content: center;
-      margin: 2rem auto;
-      max-width: 400px;
+      margin-top: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Forçar 4 colunas no celular para grade 4x4 */
+    @media (max-width: 600px) {
+      #game-board {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 340px; /* 4 x 80px + gaps */
+      }
     }
 
     .card {
@@ -56,47 +77,76 @@
 
     #restart {
       margin-top: 2rem;
-      background-color: #FFD700;
-      color: #663399;
+      background-color: #663399;
+      color: white;
       padding: 0.75rem 1.5rem;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-weight: bold;
     }
 
     #restart:hover {
+      background-color: #552288;
+    }
+
+    /* Removido o #score-message do layout principal pois usamos modal */
+
+    /* Modal para resultado */
+    #result-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    #result-content {
+      background: #663399;
+      padding: 2rem;
+      border-radius: 12px;
+      color: #FFD700;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 15px #FFD700;
+      user-select: none;
+    }
+
+    #result-content h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+
+    #result-content p {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+    }
+
+    #result-content .botao {
+      margin-top: 1rem;
+      background-color: #FFD700;
+      color: #663399;
+      font-weight: bold;
+      padding: 0.75rem 2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #result-content .botao:hover {
       background-color: #e6c200;
     }
 
-    #score-message {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      color: #FFD700;
-      font-weight: bold;
-    }
-
+    /* Contato box escondido, já que usamos modal */
     .contato {
-      background-color: rgba(255, 255, 255, 0.95);
-      margin-top: 2rem;
-      padding: 2rem;
-      border-radius: 10px;
-      display: inline-block;
-      color: #333;
-    }
-
-    .botao {
-      background-color: #663399;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      text-decoration: none;
-      border-radius: 5px;
-      display: inline-block;
-      margin-top: 1rem;
-    }
-
-    .botao:hover {
-      background-color: #552288;
+      display: none;
     }
   </style>
 </head>
@@ -104,13 +154,23 @@
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
-  <div id="score-message"></div>
+
   <button id="restart">Reiniciar Jogo</button>
 
-  <div class="contato" id="inscricao-box" style="display: none;">
-    <h2>Parabéns! Sua mente está afiada!</h2>
-    <p>Quer ir mais longe? Inscreva-se no SabiaMente!</p>
+  <div class="contato" id="inscricao-box">
+    <h2>Vamos desenvolver mais sua mente?</h2>
     <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+  </div>
+
+  <!-- Modal Resultado -->
+  <div id="result-modal">
+    <div id="result-content">
+      <h2 id="result-score"></h2>
+      <p id="result-message"></p>
+      <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+      <br/>
+      <button id="close-modal" class="botao">Fechar</button>
+    </div>
   </div>
 
   <script>
@@ -121,10 +181,24 @@
     let lockBoard = false;
     let matches = 0;
     let attempts = 0;
-    let startTime = 0;
 
-    const messageBox = document.getElementById("score-message");
-    const inscricaoBox = document.getElementById("inscricao-box");
+    const messages = [
+      "Vamos tentar de novo? Sua mente pode muito mais!",
+      "Você está aquecendo. Inscreva-se e avance mais.",
+      "Ainda dá pra evoluir bastante! Vem com a gente.",
+      "Podemos melhorar, faça a inscrição abaixo.",
+      "Bom, mas você pode ir além. Vamos juntos?",
+      "Tá indo bem! Vamos treinar mais?",
+      "Ótimo! Que tal mais desafios mentais?",
+      "Excelente! Falta pouco pra atingir o máximo.",
+      "Impressionante! Continue nesse ritmo!",
+      "Quase lá! Inscreva-se para alcançar o 10!",
+      "Parabéns! Sua mente está afiada como nunca!"
+    ];
+
+    const resultModal = document.getElementById("result-modal");
+    const resultScore = document.getElementById("result-score");
+    const resultMessage = document.getElementById("result-message");
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -151,9 +225,12 @@
       });
       matches = 0;
       attempts = 0;
-      messageBox.innerText = '';
-      inscricaoBox.style.display = 'none';
-      startTime = new Date().getTime();
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+
+      // Esconder modal se aberto
+      resultModal.style.display = 'none';
     }
 
     function handleClick(e) {
@@ -177,7 +254,7 @@
         secondCard.classList.add("matched");
         matches++;
         resetTurn();
-        if (matches === 8) showScore();
+        if (matches === emojis.length) showScore();
       } else {
         setTimeout(() => {
           firstCard.innerText = '';
@@ -195,17 +272,26 @@
     }
 
     function showScore() {
-      const endTime = new Date().getTime();
-      const seconds = Math.round((endTime - startTime) / 1000);
-      const score = Math.max(10 - Math.floor((attempts - 8) * 0.5) - Math.floor(seconds / 10), 1);
-      messageBox.innerText = `Nota: ${score}/10\nTempo: ${seconds}s | Tentativas: ${attempts}`;
-      inscricaoBox.style.display = "block";
+      const maxPairs = emojis.length; // 8
+      const maxScore = 10;
+      // Pontuação: 10 pontos menos 0.5 por tentativa acima do mínimo (8)
+      let score = maxScore - (attempts - maxPairs) * 0.5;
+      if (score < 0) score = 0;
+      score = Math.round(score);
+
+      resultScore.innerText = `Nota: ${score}/10`;
+      resultMessage.innerText = messages[score] || "Parabéns!";
+
+      resultModal.style.display = "flex";
     }
 
     document.getElementById("restart").addEventListener("click", createBoard);
+    document.getElementById("close-modal").addEventListener("click", () => {
+      resultModal.style.display = "none";
+      createBoard();
+    });
+
     createBoard();
   </script>
-</body>
-</html>
 </body>
 </html>
