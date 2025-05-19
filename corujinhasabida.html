@@ -33,22 +33,13 @@
       text-shadow: 2px 2px 4px #000;
     }
 
-    #visit-count {
-      margin-bottom: 1rem;
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: #fffacd;
-      text-shadow: 1px 1px 2px #000;
-    }
-
-    /* Forçar 4 colunas sempre */
     #game-board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       justify-content: center;
       margin-top: 2rem;
-      max-width: 360px; /* 4 x 80px + gaps */
+      max-width: 500px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -90,156 +81,83 @@
       background-color: #552288;
     }
 
-    /* Modal para resultado */
-    #result-modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.75);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: 1rem;
-      box-sizing: border-box;
-    }
-
-    #result-content {
-      background: #663399;
-      padding: 2rem;
-      border-radius: 12px;
-      color: #FFD700;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 0 15px #FFD700;
-      user-select: none;
-    }
-
-    #result-content h2 {
-      margin-top: 0;
-      font-size: 1.8rem;
-    }
-
-    #result-content p {
+    #result {
+      margin-top: 2rem;
       font-size: 1.2rem;
-      margin: 1rem 0;
-    }
-
-    #result-content .botao {
-      margin-top: 1rem;
-      background-color: #FFD700;
-      color: #663399;
       font-weight: bold;
-      padding: 0.75rem 2rem;
-      border-radius: 5px;
-      text-decoration: none;
-      display: inline-block;
-      cursor: pointer;
-      user-select: none;
     }
 
-    #result-content .botao:hover {
-      background-color: #e6c200;
-    }
-
-    /* Contato box escondido, já que usamos modal */
     .contato {
-      display: none;
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #000;
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 10px;
+      display: inline-block;
     }
 
-    /* Tabela de recordes */
-    #records-table {
-      margin: 2rem auto 0;
-      max-width: 400px;
-      background: rgba(255,255,255,0.1);
-      padding: 1rem;
-      border-radius: 8px;
-      color: #fff;
-      font-weight: bold;
-      user-select: none;
-      box-shadow: 0 0 10px #663399;
+    .botao {
+      background-color: #663399;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 1rem;
     }
 
-    #records-table h3 {
-      margin-top: 0;
-      color: #FFD700;
-      text-shadow: 1px 1px 3px #000;
-    }
-
-    #records-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    #records-table th, #records-table td {
-      padding: 0.5rem;
-      border-bottom: 1px solid #FFD700;
-      text-align: center;
-    }
-
-    #records-table th {
+    .botao:hover {
       background-color: #552288;
+    }
+
+    .records {
+      margin-top: 1rem;
+      font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+      padding: 1rem;
+      border-radius: 10px;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
-  <div id="visit-count"></div>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
 
-  <button id="restart">Reiniciar Jogo</button>
-
-  <!-- Modal Resultado -->
-  <div id="result-modal">
-    <div id="result-content">
-      <h2 id="result-score"></h2>
-      <p id="result-message"></p>
-      <p>Tempo: <span id="result-time"></span></p>
-      <p>Tentativas: <span id="result-attempts"></span></p>
-      <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
-      <br/>
-      <button id="close-modal" class="botao">Fechar</button>
-    </div>
+  <div id="result">
+    <p id="result-time"></p>
+    <p id="result-attempts"></p>
+    <p id="result-score"></p>
+    <p id="result-message"></p>
   </div>
 
-  <!-- Tabela de recordes -->
-  <div id="records-table" style="display:none;">
-    <h3>Recordes</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Melhor Tempo</th>
-          <th>Menos Tentativas</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td id="best-time-record">--</td>
-          <td id="best-attempts-record">--</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="records" id="records-table" style="display: none;">
+    <p><strong>Recorde de tempo:</strong> <span id="best-time-record">--</span></p>
+    <p><strong>Menor número de tentativas:</strong> <span id="best-attempts-record">--</span></p>
+  </div>
+
+  <button id="restart">Reiniciar Jogo</button>
+
+  <div class="contato" id="inscricao-box" style="display: none;">
+    <h2>Vamos desenvolver mais sua mente?</h2>
+    <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
   </div>
 
   <script>
-    // Contador de visitas usando localStorage
-    const visitCountEl = document.getElementById("visit-count");
-    let visits = localStorage.getItem("visitCount");
-    visits = visits ? Number(visits) + 1 : 1;
-    localStorage.setItem("visitCount", visits);
-    visitCountEl.innerText = `Você já jogou ${visits} vez${visits > 1 ? 'es' : ''}!`;
-
     const emojis = ['🐶', '🐱', '🐸', '🦉', '🧠', '🌻', '📚', '🎵'];
-    let cards = [];
-    let firstCard = null;
-    let secondCard = null;
-    let lockBoard = false;
-    let matches = 0;
-    let attempts = 0;
-    let startTime = null;
-    let timerInterval = null;
+    let cards = [], firstCard = null, secondCard = null, lockBoard = false;
+    let matches = 0, attempts = 0, startTime;
+
+    const messageBox = document.getElementById("result-message");
+    const resultTime = document.getElementById("result-time");
+    const resultAttempts = document.getElementById("result-attempts");
+    const resultScore = document.getElementById("result-score");
+    const inscricaoBox = document.getElementById("inscricao-box");
+    const recordsTable = document.getElementById("records-table");
+    const bestTimeRecord = document.getElementById("best-time-record");
+    const bestAttemptsRecord = document.getElementById("best-attempts-record");
 
     const messages = [
       "Vamos tentar de novo? Sua mente pode muito mais!",
@@ -255,15 +173,6 @@
       "Parabéns! Sua mente está afiada como nunca!"
     ];
 
-    const resultModal = document.getElementById("result-modal");
-    const resultScore = document.getElementById("result-score");
-    const resultMessage = document.getElementById("result-message");
-    const resultTime = document.getElementById("result-time");
-    const resultAttempts = document.getElementById("result-attempts");
-    const recordsTable = document.getElementById("records-table");
-    const bestTimeRecord = document.getElementById("best-time-record");
-    const bestAttemptsRecord = document.getElementById("best-attempts-record");
-
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -273,23 +182,16 @@
     }
 
     function formatTime(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      const seconds = Math.floor(ms / 1000);
+      return `${seconds}s`;
     }
 
-    function startTimer() {
-      startTime = Date.now();
-      if(timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        // poderia atualizar um display se quisesse tempo correndo, mas não vamos mostrar aqui
-      }, 1000);
-    }
-
-    function stopTimer() {
-      if(timerInterval) clearInterval(timerInterval);
-      return Date.now() - startTime;
+    function calcularPontuacao(timeElapsed, attempts, maxPairs) {
+      let pontos = 100;
+      let erros = attempts - maxPairs;
+      pontos -= erros * 5;
+      if (timeElapsed <= 60000) pontos += 10;
+      return Math.max(0, Math.min(100, pontos));
     }
 
     function createBoard() {
@@ -311,11 +213,10 @@
       attempts = 0;
       firstCard = null;
       secondCard = null;
-      lockBoard = false;
-      resultModal.style.display = 'none';
-
-      // Começa o timer ao criar o jogo
-      startTimer();
+      startTime = Date.now();
+      document.getElementById("result").style.display = "none";
+      inscricaoBox.style.display = 'none';
+      displayRecords();
     }
 
     function handleClick(e) {
@@ -337,81 +238,74 @@
       if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
         firstCard.classList.add("matched");
         secondCard.classList.add("matched");
-matches++;
-resetTurn();
-if (matches === emojis.length) {
-endGame();
-}
-} else {
-setTimeout(() => {
-firstCard.innerText = '';
-secondCard.innerText = '';
-firstCard.classList.remove("revealed");
-secondCard.classList.remove("revealed");
-resetTurn();
-}, 1000);
-}
-}
+        matches++;
+        resetTurn();
+        if (matches === emojis.length) showResult();
+      } else {
+        setTimeout(() => {
+          firstCard.innerText = '';
+          secondCard.innerText = '';
+          firstCard.classList.remove("revealed");
+          secondCard.classList.remove("revealed");
+          resetTurn();
+        }, 800);
+      }
+    }
+
     function resetTurn() {
-  [firstCard, secondCard] = [null, null];
-  lockBoard = false;
-}
+      [firstCard, secondCard] = [null, null];
+      lockBoard = false;
+    }
 
-function endGame() {
-  const timeElapsed = stopTimer();
-  showResult(timeElapsed, attempts);
-  updateRecords(timeElapsed, attempts);
-  displayRecords();
-}
+    function updateRecords(timeElapsed, attempts) {
+      let recordTime = localStorage.getItem("bestTime");
+      let recordAttempts = localStorage.getItem("bestAttempts");
 
-function showResult(timeElapsed, attempts) {
-  resultModal.style.display = 'flex';
-  const score = Math.min(attempts, 10);
-  resultScore.innerText = `Sua pontuação: ${score} de 10`;
-  resultMessage.innerText = messages[score];
-  resultTime.innerText = formatTime(timeElapsed);
-  resultAttempts.innerText = attempts;
-}
+      if (!recordTime || timeElapsed < recordTime) {
+        const name = prompt("Novo recorde de tempo! Digite seu nome:");
+        localStorage.setItem("bestTime", timeElapsed);
+        localStorage.setItem("bestTimeName", name || "Anônimo");
+      }
 
-function updateRecords(timeElapsed, attempts) {
-  // Tenta salvar os recordes no localStorage
-  let recordTime = localStorage.getItem("bestTime");
-  let recordAttempts = localStorage.getItem("bestAttempts");
+      if (!recordAttempts || attempts < recordAttempts) {
+        const name = prompt("Novo recorde de menos tentativas! Digite seu nome:");
+        localStorage.setItem("bestAttempts", attempts);
+        localStorage.setItem("bestAttemptsName", name || "Anônimo");
+      }
+    }
 
-  // Se não tiver registro, ou se o tempo for melhor (menor), salva
-  if (!recordTime || timeElapsed < recordTime) {
-    localStorage.setItem("bestTime", timeElapsed);
-  }
+    function displayRecords() {
+      const recordTime = localStorage.getItem("bestTime");
+      const recordAttempts = localStorage.getItem("bestAttempts");
+      const nameTime = localStorage.getItem("bestTimeName") || "--";
+      const nameAttempts = localStorage.getItem("bestAttemptsName") || "--";
 
-  // Se não tiver registro, ou se tentativas for menor, salva
-  if (!recordAttempts || attempts < recordAttempts) {
-    localStorage.setItem("bestAttempts", attempts);
-  }
-}
+      if (recordTime || recordAttempts) {
+        recordsTable.style.display = 'block';
+        bestTimeRecord.innerText = recordTime ? `${formatTime(Number(recordTime))} (${nameTime})` : '--';
+        bestAttemptsRecord.innerText = recordAttempts ? `${recordAttempts} (${nameAttempts})` : '--';
+      } else {
+        recordsTable.style.display = 'none';
+      }
+    }
 
-function displayRecords() {
-  const recordTime = localStorage.getItem("bestTime");
-  const recordAttempts = localStorage.getItem("bestAttempts");
+    function showResult() {
+      const timeElapsed = Date.now() - startTime;
+      const score = calcularPontuacao(timeElapsed, attempts, emojis.length);
 
-  if (recordTime || recordAttempts) {
-    recordsTable.style.display = 'block';
-    bestTimeRecord.innerText = recordTime ? formatTime(Number(recordTime)) : '--';
-    bestAttemptsRecord.innerText = recordAttempts ? recordAttempts : '--';
-  } else {
-    recordsTable.style.display = 'none';
-  }
-}
+      resultTime.innerText = `Tempo total: ${formatTime(timeElapsed)}`;
+      resultAttempts.innerText = `Tentativas: ${attempts}`;
+      resultScore.innerText = `Sua pontuação: ${score} de 100`;
+      resultMessage.innerText = messages[Math.floor(score / 10)];
+      document.getElementById("result").style.display = "block";
+      inscricaoBox.style.display = "block";
 
-document.getElementById("restart").addEventListener("click", () => {
-  createBoard();
-});
+      updateRecords(timeElapsed, attempts);
+      displayRecords();
+    }
 
-document.getElementById("close-modal").addEventListener("click", () => {
-  resultModal.style.display = 'none';
-});
-
-// Iniciar pela primeira vez
-createBoard();
-displayRecords();
-</script> </body> </html>
-
+    document.getElementById("restart").addEventListener("click", createBoard);
+    createBoard();
+  </script>
+</body>
+</html>
