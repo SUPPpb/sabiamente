@@ -17,17 +17,6 @@
       padding: 2rem;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: url('CorujinhaSabidaExercicio.png') no-repeat center center;
-      background-size: contain;
-      opacity: 0.08;
-      z-index: -1;
-    }
-
     h1 {
       color: #FFD700;
       text-shadow: 2px 2px 4px #000;
@@ -38,10 +27,8 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       justify-content: center;
-      margin-top: 2rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 2rem auto;
+      max-width: 400px;
     }
 
     .card {
@@ -69,31 +56,33 @@
 
     #restart {
       margin-top: 2rem;
-      background-color: #663399;
-      color: white;
+      background-color: #FFD700;
+      color: #663399;
       padding: 0.75rem 1.5rem;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
 
     #restart:hover {
-      background-color: #552288;
+      background-color: #e6c200;
     }
 
-    #result {
+    #score-message {
       margin-top: 2rem;
       font-size: 1.2rem;
+      color: #FFD700;
       font-weight: bold;
     }
 
     .contato {
       background-color: rgba(255, 255, 255, 0.95);
-      color: #000;
       margin-top: 2rem;
       padding: 2rem;
       border-radius: 10px;
       display: inline-block;
+      color: #333;
     }
 
     .botao {
@@ -109,69 +98,33 @@
     .botao:hover {
       background-color: #552288;
     }
-
-    .records {
-      margin-top: 1rem;
-      font-size: 1rem;
-      background-color: rgba(255, 255, 255, 0.9);
-      color: #000;
-      padding: 1rem;
-      border-radius: 10px;
-      display: inline-block;
-    }
   </style>
 </head>
 <body>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
-
-  <div id="result">
-    <p id="result-time"></p>
-    <p id="result-attempts"></p>
-    <p id="result-score"></p>
-    <p id="result-message"></p>
-  </div>
-
-  <div class="records" id="records-table" style="display: none;">
-    <p><strong>Recorde de tempo:</strong> <span id="best-time-record">--</span></p>
-    <p><strong>Menor número de tentativas:</strong> <span id="best-attempts-record">--</span></p>
-  </div>
-
+  <div id="score-message"></div>
   <button id="restart">Reiniciar Jogo</button>
 
   <div class="contato" id="inscricao-box" style="display: none;">
-    <h2>Vamos desenvolver mais sua mente?</h2>
+    <h2>Parabéns! Sua mente está afiada!</h2>
+    <p>Quer ir mais longe? Inscreva-se no SabiaMente!</p>
     <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
   </div>
 
   <script>
     const emojis = ['🐶', '🐱', '🐸', '🦉', '🧠', '🌻', '📚', '🎵'];
-    let cards = [], firstCard = null, secondCard = null, lockBoard = false;
-    let matches = 0, attempts = 0, startTime;
+    let cards = [];
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matches = 0;
+    let attempts = 0;
+    let startTime = 0;
 
-    const messageBox = document.getElementById("result-message");
-    const resultTime = document.getElementById("result-time");
-    const resultAttempts = document.getElementById("result-attempts");
-    const resultScore = document.getElementById("result-score");
+    const messageBox = document.getElementById("score-message");
     const inscricaoBox = document.getElementById("inscricao-box");
-    const recordsTable = document.getElementById("records-table");
-    const bestTimeRecord = document.getElementById("best-time-record");
-    const bestAttemptsRecord = document.getElementById("best-attempts-record");
-
-    const messages = [
-      "Vamos tentar de novo? Sua mente pode muito mais!",
-      "Você está aquecendo. Inscreva-se e avance mais.",
-      "Ainda dá pra evoluir bastante! Vem com a gente.",
-      "Podemos melhorar, faça a inscrição abaixo.",
-      "Bom, mas você pode ir além. Vamos juntos?",
-      "Tá indo bem! Vamos treinar mais?",
-      "Ótimo! Que tal mais desafios mentais?",
-      "Excelente! Falta pouco pra atingir o máximo.",
-      "Impressionante! Continue nesse ritmo!",
-      "Quase lá! Inscreva-se para alcançar o 10!",
-      "Parabéns! Sua mente está afiada como nunca!"
-    ];
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -179,19 +132,6 @@
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
-    }
-
-    function formatTime(ms) {
-      const seconds = Math.floor(ms / 1000);
-      return `${seconds}s`;
-    }
-
-    function calcularPontuacao(timeElapsed, attempts, maxPairs) {
-      let pontos = 100;
-      let erros = attempts - maxPairs;
-      pontos -= erros * 5;
-      if (timeElapsed <= 60000) pontos += 10;
-      return Math.max(0, Math.min(100, pontos));
     }
 
     function createBoard() {
@@ -211,12 +151,9 @@
       });
       matches = 0;
       attempts = 0;
-      firstCard = null;
-      secondCard = null;
-      startTime = Date.now();
-      document.getElementById("result").style.display = "none";
+      messageBox.innerText = '';
       inscricaoBox.style.display = 'none';
-      displayRecords();
+      startTime = new Date().getTime();
     }
 
     function handleClick(e) {
@@ -240,7 +177,7 @@
         secondCard.classList.add("matched");
         matches++;
         resetTurn();
-        if (matches === emojis.length) showResult();
+        if (matches === 8) showScore();
       } else {
         setTimeout(() => {
           firstCard.innerText = '';
@@ -248,7 +185,7 @@
           firstCard.classList.remove("revealed");
           secondCard.classList.remove("revealed");
           resetTurn();
-        }, 800);
+        }, 1000);
       }
     }
 
@@ -257,55 +194,18 @@
       lockBoard = false;
     }
 
-    function updateRecords(timeElapsed, attempts) {
-      let recordTime = localStorage.getItem("bestTime");
-      let recordAttempts = localStorage.getItem("bestAttempts");
-
-      if (!recordTime || timeElapsed < recordTime) {
-        const name = prompt("Novo recorde de tempo! Digite seu nome:");
-        localStorage.setItem("bestTime", timeElapsed);
-        localStorage.setItem("bestTimeName", name || "Anônimo");
-      }
-
-      if (!recordAttempts || attempts < recordAttempts) {
-        const name = prompt("Novo recorde de menos tentativas! Digite seu nome:");
-        localStorage.setItem("bestAttempts", attempts);
-        localStorage.setItem("bestAttemptsName", name || "Anônimo");
-      }
-    }
-
-    function displayRecords() {
-      const recordTime = localStorage.getItem("bestTime");
-      const recordAttempts = localStorage.getItem("bestAttempts");
-      const nameTime = localStorage.getItem("bestTimeName") || "--";
-      const nameAttempts = localStorage.getItem("bestAttemptsName") || "--";
-
-      if (recordTime || recordAttempts) {
-        recordsTable.style.display = 'block';
-        bestTimeRecord.innerText = recordTime ? `${formatTime(Number(recordTime))} (${nameTime})` : '--';
-        bestAttemptsRecord.innerText = recordAttempts ? `${recordAttempts} (${nameAttempts})` : '--';
-      } else {
-        recordsTable.style.display = 'none';
-      }
-    }
-
-    function showResult() {
-      const timeElapsed = Date.now() - startTime;
-      const score = calcularPontuacao(timeElapsed, attempts, emojis.length);
-
-      resultTime.innerText = `Tempo total: ${formatTime(timeElapsed)}`;
-      resultAttempts.innerText = `Tentativas: ${attempts}`;
-      resultScore.innerText = `Sua pontuação: ${score} de 100`;
-      resultMessage.innerText = messages[Math.floor(score / 10)];
-      document.getElementById("result").style.display = "block";
+    function showScore() {
+      const endTime = new Date().getTime();
+      const seconds = Math.round((endTime - startTime) / 1000);
+      const score = Math.max(10 - Math.floor((attempts - 8) * 0.5) - Math.floor(seconds / 10), 1);
+      messageBox.innerText = `Nota: ${score}/10\nTempo: ${seconds}s | Tentativas: ${attempts}`;
       inscricaoBox.style.display = "block";
-
-      updateRecords(timeElapsed, attempts);
-      displayRecords();
     }
 
     document.getElementById("restart").addEventListener("click", createBoard);
     createBoard();
   </script>
+</body>
+</html>
 </body>
 </html>
