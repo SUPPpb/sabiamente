@@ -33,23 +33,24 @@
       text-shadow: 2px 2px 4px #000;
     }
 
+    #visit-count {
+      margin-bottom: 1rem;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #fffacd;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* Forçar 4 colunas sempre */
     #game-board {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       justify-content: center;
       margin-top: 2rem;
-      max-width: 500px;
+      max-width: 360px; /* 4 x 80px + gaps */
       margin-left: auto;
       margin-right: auto;
-    }
-
-    /* Forçar 4 colunas no celular para grade 4x4 */
-    @media (max-width: 600px) {
-      #game-board {
-        grid-template-columns: repeat(4, 1fr);
-        max-width: 340px; /* 4 x 80px + gaps */
-      }
     }
 
     .card {
@@ -88,8 +89,6 @@
     #restart:hover {
       background-color: #552288;
     }
-
-    /* Removido o #score-message do layout principal pois usamos modal */
 
     /* Modal para resultado */
     #result-modal {
@@ -148,32 +147,90 @@
     .contato {
       display: none;
     }
+
+    /* Tabela de recordes */
+    #records-table {
+      margin: 2rem auto 0;
+      max-width: 400px;
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      user-select: none;
+      box-shadow: 0 0 10px #663399;
+    }
+
+    #records-table h3 {
+      margin-top: 0;
+      color: #FFD700;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    #records-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #records-table th, #records-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #FFD700;
+      text-align: center;
+    }
+
+    #records-table th {
+      background-color: #552288;
+    }
   </style>
 </head>
 <body>
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
+  <div id="visit-count"></div>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
 
   <button id="restart">Reiniciar Jogo</button>
-
-  <div class="contato" id="inscricao-box">
-    <h2>Vamos desenvolver mais sua mente?</h2>
-    <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
-  </div>
 
   <!-- Modal Resultado -->
   <div id="result-modal">
     <div id="result-content">
       <h2 id="result-score"></h2>
       <p id="result-message"></p>
+      <p>Tempo: <span id="result-time"></span></p>
+      <p>Tentativas: <span id="result-attempts"></span></p>
       <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
       <br/>
       <button id="close-modal" class="botao">Fechar</button>
     </div>
   </div>
 
+  <!-- Tabela de recordes -->
+  <div id="records-table" style="display:none;">
+    <h3>Recordes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Melhor Tempo</th>
+          <th>Menos Tentativas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="best-time-record">--</td>
+          <td id="best-attempts-record">--</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <script>
+    // Contador de visitas usando localStorage
+    const visitCountEl = document.getElementById("visit-count");
+    let visits = localStorage.getItem("visitCount");
+    visits = visits ? Number(visits) + 1 : 1;
+    localStorage.setItem("visitCount", visits);
+    visitCountEl.innerText = `Você já jogou ${visits} vez${visits > 1 ? 'es' : ''}!`;
+
     const emojis = ['🐶', '🐱', '🐸', '🦉', '🧠', '🌻', '📚', '🎵'];
     let cards = [];
     let firstCard = null;
@@ -181,6 +238,8 @@
     let lockBoard = false;
     let matches = 0;
     let attempts = 0;
+    let startTime = null;
+    let timerInterval = null;
 
     const messages = [
       "Vamos tentar de novo? Sua mente pode muito mais!",
@@ -199,6 +258,11 @@
     const resultModal = document.getElementById("result-modal");
     const resultScore = document.getElementById("result-score");
     const resultMessage = document.getElementById("result-message");
+    const resultTime = document.getElementById("result-time");
+    const resultAttempts = document.getElementById("result-attempts");
+    const recordsTable = document.getElementById("records-table");
+    const bestTimeRecord = document.getElementById("best-time-record");
+    const bestAttemptsRecord = document.getElementById("best-attempts-record");
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -206,6 +270,26 @@
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
+    }
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      if(timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        // poderia atualizar um display se quisesse tempo correndo, mas não vamos mostrar aqui
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if(timerInterval) clearInterval(timerInterval);
+      return Date.now() - startTime;
     }
 
     function createBoard() {
@@ -228,9 +312,10 @@
       firstCard = null;
       secondCard = null;
       lockBoard = false;
-
-      // Esconder modal se aberto
       resultModal.style.display = 'none';
+
+      // Começa o timer ao criar o jogo
+      startTimer();
     }
 
     function handleClick(e) {
@@ -252,48 +337,81 @@
       if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
         firstCard.classList.add("matched");
         secondCard.classList.add("matched");
-        matches++;
-        resetTurn();
-        if (matches === emojis.length) showScore();
-      } else {
-        setTimeout(() => {
-          firstCard.innerText = '';
-          secondCard.innerText = '';
-          firstCard.classList.remove("revealed");
-          secondCard.classList.remove("revealed");
-          resetTurn();
-        }, 1000);
-      }
-    }
-
+matches++;
+resetTurn();
+if (matches === emojis.length) {
+endGame();
+}
+} else {
+setTimeout(() => {
+firstCard.innerText = '';
+secondCard.innerText = '';
+firstCard.classList.remove("revealed");
+secondCard.classList.remove("revealed");
+resetTurn();
+}, 1000);
+}
+}
     function resetTurn() {
-      [firstCard, secondCard] = [null, null];
-      lockBoard = false;
-    }
+  [firstCard, secondCard] = [null, null];
+  lockBoard = false;
+}
 
-    function showScore() {
-      const maxPairs = emojis.length; // 8
-      const maxScore = 10;
-      // Pontuação: 10 pontos menos 0.5 por tentativa acima do mínimo (8)
-      let score = maxScore - (attempts - maxPairs) * 0.5;
-      if (score < 0) score = 0;
-      score = Math.round(score);
+function endGame() {
+  const timeElapsed = stopTimer();
+  showResult(timeElapsed, attempts);
+  updateRecords(timeElapsed, attempts);
+  displayRecords();
+}
 
-      resultScore.innerText = `Nota: ${score}/10`;
-      resultMessage.innerText = messages[score] || "Parabéns!";
+function showResult(timeElapsed, attempts) {
+  resultModal.style.display = 'flex';
+  const score = Math.min(attempts, 10);
+  resultScore.innerText = `Sua pontuação: ${score} de 10`;
+  resultMessage.innerText = messages[score];
+  resultTime.innerText = formatTime(timeElapsed);
+  resultAttempts.innerText = attempts;
+}
 
-      resultModal.style.display = "flex";
-    }
+function updateRecords(timeElapsed, attempts) {
+  // Tenta salvar os recordes no localStorage
+  let recordTime = localStorage.getItem("bestTime");
+  let recordAttempts = localStorage.getItem("bestAttempts");
 
-    document.getElementById("restart").addEventListener("click", createBoard);
-    document.getElementById("close-modal").addEventListener("click", () => {
-      resultModal.style.display = "none";
-      createBoard();
-    });
+  // Se não tiver registro, ou se o tempo for melhor (menor), salva
+  if (!recordTime || timeElapsed < recordTime) {
+    localStorage.setItem("bestTime", timeElapsed);
+  }
 
-    createBoard();
-  </script>
-</body>
-</html>
+  // Se não tiver registro, ou se tentativas for menor, salva
+  if (!recordAttempts || attempts < recordAttempts) {
+    localStorage.setItem("bestAttempts", attempts);
+  }
+}
 
+function displayRecords() {
+  const recordTime = localStorage.getItem("bestTime");
+  const recordAttempts = localStorage.getItem("bestAttempts");
+
+  if (recordTime || recordAttempts) {
+    recordsTable.style.display = 'block';
+    bestTimeRecord.innerText = recordTime ? formatTime(Number(recordTime)) : '--';
+    bestAttemptsRecord.innerText = recordAttempts ? recordAttempts : '--';
+  } else {
+    recordsTable.style.display = 'none';
+  }
+}
+
+document.getElementById("restart").addEventListener("click", () => {
+  createBoard();
+});
+
+document.getElementById("close-modal").addEventListener("click", () => {
+  resultModal.style.display = 'none';
+});
+
+// Iniciar pela primeira vez
+createBoard();
+displayRecords();
+</script> </body> </html>
 
