@@ -5,18 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória - SabiaMente</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
-      background-size: cover;
-      text-align: center;
-      margin: 0;
-      padding: 2rem;
-      color: #333;
-    }
-    h1 {
-      color: #663399;
-      text-shadow: 1px 1px 2px white;
+   body {
+  font-family: Arial, sans-serif;
+  background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
+  background-size: contain;
+  background-color: #663399; /* fundo roxo para preencher o restante */
+  background-blend-mode: multiply;
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+  padding: 2rem;
+}
+
+h1 {
+  color: #FFD700;
+  text-shadow: 2px 2px 4px #000;
+}
+
+#score-message {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: #FFD700;
+  font-weight: bold;
+}
     }
     #game-board {
       display: grid;
