@@ -5,77 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória - SabiaMente</title>
   <style>
-     #game-board {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px;
-    justify-content: center;
-    margin-top: 2rem;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-      @media (max-width: 600px) {
-    #game-board {
-      grid-template-columns: repeat(4, 1fr);
-      max-width: 320px; /* 4x80px + gaps */
-    }
-  }
-    #result-modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.75);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  #result-content {
-    background: #663399;
-    padding: 2rem;
-    border-radius: 12px;
-    color: #FFD700;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 0 15px #FFD700;
-  }
-
-  #result-content h2 {
-    margin-top: 0;
-    font-size: 1.8rem;
-  }
-
-  #result-content p {
-    font-size: 1.2rem;
-    margin: 1rem 0;
-  }
-
-  #result-content .botao {
-    margin-top: 1rem;
-    background-color: #FFD700;
-    color: #663399;
-    font-weight: bold;
-    padding: 0.75rem 2rem;
-    border-radius: 5px;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  #result-content .botao:hover {
-    background-color: #e6c200;
-  }
-     <div id="result-modal">
-    <div id="result-content">
-      <h2 id="result-score"></h2>
-      <p id="result-message"></p>
-      <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
-      <br/>
-      <button id="close-modal" class="botao" style="margin-top:1rem;">Fechar</button>
-    </div>
-  </div>
-
     body {
       font-family: Arial, sans-serif;
       background: url('CorujinhaSabidaExercicio.png') no-repeat center center fixed;
@@ -115,6 +44,14 @@
       margin-right: auto;
     }
 
+    /* Forçar 4 colunas no celular para grade 4x4 */
+    @media (max-width: 600px) {
+      #game-board {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 340px; /* 4 x 80px + gaps */
+      }
+    }
+
     .card {
       aspect-ratio: 1 / 1;
       background-color: #A8E6CF;
@@ -152,33 +89,64 @@
       background-color: #552288;
     }
 
-    #score-message {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      color: #FFD700;
-      font-weight: bold;
+    /* Removido o #score-message do layout principal pois usamos modal */
+
+    /* Modal para resultado */
+    #result-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+      box-sizing: border-box;
     }
 
-    .contato {
-      background-color: rgba(255, 255, 255, 0.9);
-      margin-top: 3rem;
+    #result-content {
+      background: #663399;
       padding: 2rem;
-      border-radius: 10px;
-      display: inline-block;
+      border-radius: 12px;
+      color: #FFD700;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 15px #FFD700;
+      user-select: none;
     }
 
-    .botao {
-      background-color: #663399;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      text-decoration: none;
-      border-radius: 5px;
-      display: inline-block;
+    #result-content h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+
+    #result-content p {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+    }
+
+    #result-content .botao {
       margin-top: 1rem;
+      background-color: #FFD700;
+      color: #663399;
+      font-weight: bold;
+      padding: 0.75rem 2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .botao:hover {
-      background-color: #552288;
+    #result-content .botao:hover {
+      background-color: #e6c200;
+    }
+
+    /* Contato box escondido, já que usamos modal */
+    .contato {
+      display: none;
     }
   </style>
 </head>
@@ -186,12 +154,23 @@
   <h1>Jogo da Memória - SabiaMente 🧠</h1>
   <p>Encontre os pares para manter sua mente ativa!</p>
   <div id="game-board"></div>
-  <div id="score-message"></div>
+
   <button id="restart">Reiniciar Jogo</button>
 
-  <div class="contato" id="inscricao-box" style="display: none;">
+  <div class="contato" id="inscricao-box">
     <h2>Vamos desenvolver mais sua mente?</h2>
     <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+  </div>
+
+  <!-- Modal Resultado -->
+  <div id="result-modal">
+    <div id="result-content">
+      <h2 id="result-score"></h2>
+      <p id="result-message"></p>
+      <a class="botao" href="https://wa.me/5562995752038" target="_blank">Fazer Inscrição</a>
+      <br/>
+      <button id="close-modal" class="botao">Fechar</button>
+    </div>
   </div>
 
   <script>
@@ -202,9 +181,6 @@
     let lockBoard = false;
     let matches = 0;
     let attempts = 0;
-
-    const messageBox = document.getElementById("score-message");
-    const inscricaoBox = document.getElementById("inscricao-box");
 
     const messages = [
       "Vamos tentar de novo? Sua mente pode muito mais!",
@@ -219,6 +195,10 @@
       "Quase lá! Inscreva-se para alcançar o 10!",
       "Parabéns! Sua mente está afiada como nunca!"
     ];
+
+    const resultModal = document.getElementById("result-modal");
+    const resultScore = document.getElementById("result-score");
+    const resultMessage = document.getElementById("result-message");
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -245,8 +225,12 @@
       });
       matches = 0;
       attempts = 0;
-      messageBox.innerText = '';
-      inscricaoBox.style.display = 'none';
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+
+      // Esconder modal se aberto
+      resultModal.style.display = 'none';
     }
 
     function handleClick(e) {
@@ -270,7 +254,7 @@
         secondCard.classList.add("matched");
         matches++;
         resetTurn();
-        if (matches === 8) showScore();
+        if (matches === emojis.length) showScore();
       } else {
         setTimeout(() => {
           firstCard.innerText = '';
@@ -288,16 +272,28 @@
     }
 
     function showScore() {
-      let score = matches;
-      if (attempts <= 12) score += 2;
-      if (score > 10) score = 10;
-      messageBox.innerText = `Nota: ${score}/10 — ${messages[score]}`;
-      inscricaoBox.style.display = "block";
+      const maxPairs = emojis.length; // 8
+      const maxScore = 10;
+      // Pontuação: 10 pontos menos 0.5 por tentativa acima do mínimo (8)
+      let score = maxScore - (attempts - maxPairs) * 0.5;
+      if (score < 0) score = 0;
+      score = Math.round(score);
+
+      resultScore.innerText = `Nota: ${score}/10`;
+      resultMessage.innerText = messages[score] || "Parabéns!";
+
+      resultModal.style.display = "flex";
     }
 
     document.getElementById("restart").addEventListener("click", createBoard);
+    document.getElementById("close-modal").addEventListener("click", () => {
+      resultModal.style.display = "none";
+      createBoard();
+    });
+
     createBoard();
   </script>
 </body>
 </html>
+
 
